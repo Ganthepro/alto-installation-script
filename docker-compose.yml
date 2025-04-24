@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:4.4
+    container_name: infra_mongodb
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - alto_internal
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          memory: 3G
+        reservations:
+          memory: 1G
+
+  timescaledb:
+    image: timescale/timescaledb-ha:pg17
+    container_name: infra_timescaledb
+    restart: unless-stopped
+    ports:
+      - 5433:5432
+    volumes:
+      - timescaledb_data:/home/postgres/pgdata/data
+      - ./scripts/databases:/timescaledb
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${TIMESCALEDB_DATABASE}
+      - POSTGRES_PASSWORD=${TIMESCALEDB_PASSWORD}
+    command: 
+      - "bash"
+      - "-c"
+      - "/timescaledb/timescaledb-entrypoint.sh"
+    networks:
+      - alto_internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+        
+  alto-dash:
+    build:
+      context: ./alto-dash
+      dockerfile: Dockerfile
+    image: alto-dash:latest
+    restart: unless-stopped
+    ports:
+      - 8801:8801
+    container_name: alto-dash
+    volumes:
+      - ./alto-dash:/dashboard
+      - ./site_configs:/dashboard/site_configs
+      - ./model_schema.yaml:/dashboard/model_schema.yaml
+    networks:
+      - alto_internal
+    deploy:
+      resources:
+        limits:
+          memory: 5G
+        reservations:
+          memory: 2G
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+
+volumes:
+  mongodb_data:
+  timescaledb_data:
+
+networks:
+  alto_internal:
+    name: alto_internal

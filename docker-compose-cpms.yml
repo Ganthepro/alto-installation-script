@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  alto-cero-automation-backend:
+    container_name: alto-cero-automation-backend
+    build: alto-cero-automation-backend/.
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8001"
+    volumes:
+      - ./alto-cero-automation-backend:/app
+    ports:
+      - "8001:8001"
+    environment:
+      - DEBUG=0
+      - POSTGRES_DB=${DJANGO_POSTGRES_DB}
+      - POSTGRES_USER=${DJANGO_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${DJANGO_POSTGRES_PASSWORD}
+      - POSTGRES_HOST=supabase-db
+      - POSTGRES_PORT=${DJANGO_POSTGRES_PORT}
+      - MONGODB_URI=${MONGODB_URI}
+      - TIMESCALEDB_HOST=${TIMESCALEDB_HOST}
+      - TIMESCALEDB_PORT=${TIMESCALEDB_PORT}
+      - TIMESCALEDB_USER=${TIMESCALEDB_USER}
+      - TIMESCALEDB_PASSWORD=${TIMESCALEDB_PASSWORD}
+      - TIMESCALEDB_DATABASE=${TIMESCALEDB_DATABASE}
+    networks:
+      - alto_internal
+      - supabase_network
+
+  alto-cero-interface:
+    container_name: alto-cero-interface
+    build:
+      context: alto-cero-interface/.
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - alto_internal
+      - supabase_network
+    restart: unless-stopped
+
+
+networks:
+  alto_internal:
+    external: true
+    name: alto_internal
+  supabase_network:
+    external: true
+    name: supabase_default 
