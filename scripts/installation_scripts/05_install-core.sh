@@ -87,26 +87,26 @@ fi
 # sudo docker compose -f docker-compose.yml up --build -d
 # sudo docker compose -f docker-compose.yml stop
 
-# if [ "$SUPABASE_ENABLED" = "true" ]; then
-#     echo -e "\nInstalling Supabase services..."
-#     python $WORKING_DIR/scripts/installation_scripts/02_init-supabase-cred.py $WORKING_DIR/supabase/docker/.env $site_id
-#     cd supabase/docker
-#     sudo docker compose up -d
-#     cd $WORKING_DIR
+if [ "$SUPABASE_ENABLED" = "true" ]; then
+    echo -e "\nInstalling Supabase services..."
+    python $WORKING_DIR/scripts/installation_scripts/02_init-supabase-cred.py $WORKING_DIR/supabase/docker/.env $site_id
+    cd supabase/docker
+    sudo docker compose up -d
+    cd $WORKING_DIR
 
-#     echo -e "\nInstalling CPMS services..."  # TODO: Make this optional and selectable
-#     cp .env $WORKING_DIR/alto-cero-interface/.env
-#     sudo docker compose -f docker-compose-cpms.yml up --build -d  # This include Django migrate command
-#     sudo docker compose -f docker-compose-cpms.yml stop
+    echo -e "\nInstalling CPMS services..."  # TODO: Make this optional and selectable
+    cp .env $WORKING_DIR/alto-cero-interface/.env
+    sudo docker compose -f docker-compose-cpms.yml up --build -d  # This include Django migrate command
+    sudo docker compose -f docker-compose-cpms.yml stop
 
-#     # Enable Realtime for Supabase tables
-#     echo -e "\nEnabling Realtime for Supabase tables..."
-#     sudo docker exec -i supabase-db psql -U postgres -d postgres -c "
-#       ALTER PUBLICATION supabase_realtime ADD TABLE latest_data;
-#       ALTER PUBLICATION supabase_realtime ADD TABLE maintenance_history;
-#       ALTER PUBLICATION supabase_realtime ADD TABLE action_queue;
-#       ALTER PUBLICATION supabase_realtime ADD TABLE group_action_queue;
-#       ALTER PUBLICATION supabase_realtime ADD TABLE autopilot;
-#       ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
-#     "
-# fi
+    # Enable Realtime for Supabase tables
+    echo -e "\nEnabling Realtime for Supabase tables..."
+    sudo docker exec -i supabase-db psql -U postgres -d postgres -c "
+      ALTER PUBLICATION supabase_realtime ADD TABLE latest_data;
+      ALTER PUBLICATION supabase_realtime ADD TABLE maintenance_history;
+      ALTER PUBLICATION supabase_realtime ADD TABLE action_queue;
+      ALTER PUBLICATION supabase_realtime ADD TABLE group_action_queue;
+      ALTER PUBLICATION supabase_realtime ADD TABLE autopilot;
+      ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
+    "
+fi
