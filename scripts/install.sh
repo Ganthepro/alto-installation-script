@@ -232,6 +232,7 @@ main() {
     fi
 
     # Clear screen and start fresh
+    
     clear
 
     echo -e "${BOLD}${GREEN}
