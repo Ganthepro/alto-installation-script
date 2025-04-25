@@ -1,0 +1,23 @@
+{
+    "modules": [
+        {
+            "env": {
+                "POSTGRES_DB": "postgres",
+                "POSTGRES_PASSWORD": "postgres"
+            },
+            "image": "timescale/timescaledb-ha:pg17",
+            "name": "infra_timescaledb",
+            "startup_order": 1
+        },
+        {
+            "image": "mongo:4.4",
+            "name": "infra_mongodb",
+            "startup_order": 1
+        },
+        {
+            "image": "altoinfra.azurecr.io/alto_os:v2.5",
+            "name": "alto_os",
+            "startup_order": 2
+        }
+    ]
+}
