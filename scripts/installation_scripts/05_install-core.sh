@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 
 # Parse command line arguments
 site_id=""
@@ -32,7 +32,6 @@ if [ -z "$token" ]; then
 fi
 
 cd $WORKING_DIR
-source $WORKING_DIR/volttron/env/bin/activate
 
 echo "Reading services from site config..."
 SERVICES_STATUS=$(python3 -c "
@@ -66,27 +65,10 @@ echo -e "\nList of Services"
 echo "$SERVICES_STATUS" | grep -v "^---ENABLED---"
 
 echo -e "\nInstalling Core services..."
-URL="https://iot-api.edusaig.com/api/iot-hub/set-modules"
-JSON_FILE="requests/setup-modules.json"
-
-response=$(curl -s -w "%{http_code}" -o response.json \
-    -X POST "$URL" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $token" \
-    --data @"$JSON_FILE")
-
-# Check the HTTP status code
-if [ "$response" -eq 204 ]; then
-    echo "✅ Request successful (204). No content returned."
-else
-    echo "❌ Request failed with HTTP code $response"
-    cat response.json
-    exit 1
-fi
 
 if [ "$SUPABASE_ENABLED" = "true" ]; then
     echo -e "\nInstalling Supabase services..."
-    python $WORKING_DIR/scripts/installation_scripts/02_init-supabase-cred.py $WORKING_DIR/supabase/docker/.env $site_id
+    python $WORKING_DIR/scripts/installation_scripts/02_init-supabase-cred.py $WORKING_DIR/supabase/.env $site_id $token
     cd supabase
     sudo docker compose up -d
     cd $WORKING_DIR

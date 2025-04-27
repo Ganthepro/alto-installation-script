@@ -4,11 +4,10 @@
 # It handles installation, setting up necessary dependencies, configuring services,
 # and installing required applications.
 #
-# Usage: ./install.sh --site_id <site_id> [--with-azure]
+# Usage: ./install.sh --token <token>
 #
 # Arguments:
-#   --site_id: The id of the site to install.
-#   --with-azure: Include Azure IoT Edge registration and installation
+#   --token: The token to use for the installation.
 #
 # Note: Before running this script, make sure to run init-submodules.sh first
 # to initialize and update all required git submodules.
@@ -18,7 +17,7 @@ WORKING_DIR="/home/gan/alto-installation-script"
 export WORKING_DIR=$WORKING_DIR
 site_id=""
 token=""
-with_azure=false
+with_azure=true
 
 # Terminal colors and styles
 GREEN='\033[0;32m'
@@ -38,13 +37,6 @@ touch "$LOG_FILE"
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in
-    --site_id)
-        site_id="$2"
-        shift
-        ;;
-    --with-azure)
-        with_azure=true
-        ;;
     --token)
         token="$2"
         shift
@@ -55,14 +47,6 @@ while [[ $# -gt 0 ]]; do
     esac
     shift
 done
-
-if [ ! -f "$WORKING_DIR/site_configs/$site_id.yaml" ]; then
-    mkdir -p "$WORKING_DIR/site_configs"  # Ensure the directory exists
-    curl -s -H "Authorization: Bearer $token" \
-         "https://iot-api.edusaig.com/api/config/me" \
-         -o "$WORKING_DIR/site_configs/$site_id.yaml"
-fi
-
 
 URL="https://iot-api.edusaig.com/api/device/env"
 
@@ -91,9 +75,42 @@ jq -r 'to_entries[] | "\(.key | ascii_upcase)=\(.value)"' <<<"$BODY" >.env
 
 echo ".env file created:"
 cat .env
+export $(cat .env | xargs)
+site_id=$(echo $SITE_ID | tr -d '"')
+
+# Download site config
+if [ ! -f "$WORKING_DIR/site_configs/$site_id.yaml" ]; then
+    echo "Site config does not exist, creating it"
+    mkdir -p "$WORKING_DIR/site_configs"  # Ensure the directory exists
+else
+    echo "Site config already exists, replacing it"
+    rm -f "$WORKING_DIR/site_configs/$site_id.yaml"
+fi
+
+http_status=$(curl -s -w "%{http_code}" -o "$WORKING_DIR/site_configs/$site_id.yaml" \
+    -H "Authorization: Bearer $token" \
+    "https://iot-api.edusaig.com/api/config/me")
+
+if [ "$http_status" -eq 200 ]; then
+    echo "✅ Site config downloaded"
+else
+    echo "❌ Site config download failed with status: $http_status"
+    rm -f "$WORKING_DIR/site_configs/$site_id.yaml"  # Remove partial file if needed
+    exit 1  
+fi
+http_status=$(curl -s -w "%{http_code}" -o "$WORKING_DIR/site_configs/$site_id.yaml" \
+    -H "Authorization: Bearer $token" \
+    "https://iot-api.edusaig.com/api/config/me")
+
+if [ "$http_status" -eq 200 ]; then
+    echo "✅ Site config downloaded"
+else
+    echo "❌ Site config download failed with status: $http_status"
+    exit 1
+fi
+
 
 # Installation scripts
-
 INSTALL_SCRIPTS=(
     "sudo bash $WORKING_DIR/scripts/installation_scripts/01_install-docker.sh"
     "sudo docker image prune -f"

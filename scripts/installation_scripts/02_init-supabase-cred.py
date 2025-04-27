@@ -25,25 +25,7 @@ import time
 import jwt
 import argparse
 import yaml
-
-def generate_jwt_secret(length=40):
-    """Generate a random JWT secret of specified length."""
-    alphabet = string.ascii_letters + string.digits
-    return ''.join(secrets.choice(alphabet) for _ in range(length))
-
-def generate_jwt(secret, role):
-    """Generate a JWT token for the specified role."""
-    now = int(time.time())
-    ten_years = 10 * 365 * 24 * 60 * 60  # 10 years in seconds
-    
-    payload = {
-        'role': role,
-        'iss': 'supabase',
-        'iat': now,
-        'exp': now + ten_years
-    }
-    
-    return jwt.encode(payload, secret, algorithm='HS256')
+import requests
 
 def update_supabase_env_file(env_path, jwt_secret, anon_key, service_key):
     """Update the .env file with new keys."""
@@ -167,11 +149,12 @@ def main():
     parser = argparse.ArgumentParser(description='Generate Supabase JWT secret and API keys')
     parser.add_argument('env_path', help='Path to the .env file to update')
     parser.add_argument('site_id', help='Site ID to update in site configuration')
+    parser.add_argument('token', help='For get supabase credentials token from API')
     args = parser.parse_args()
     
     env_path = args.env_path
     site_id = args.site_id
-    
+    token = args.token
     # Check if the .env file exists
     if not os.path.exists(env_path):
         # Try to copy from .env.example if it exists
@@ -190,9 +173,11 @@ def main():
             sys.exit(1)
     
     # Generate the secret and keys
-    jwt_secret = generate_jwt_secret()
-    anon_key = generate_jwt(jwt_secret, 'anon')
-    service_key = generate_jwt(jwt_secret, 'service_role')
+    response = requests.get('https://iot-api.edusaig.com/api/config/supabase-cred/', headers={'Authorization': f'Bearer {token}', 'accept': 'application/json'})
+    data = response.json()
+    jwt_secret = data['jwt_secret']
+    anon_key = data['anon_key']
+    service_key = data['service_key']
     
     # If jwt returns bytes (depends on version), decode to string
     if isinstance(anon_key, bytes):
