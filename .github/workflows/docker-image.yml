@@ -3,6 +3,8 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+
 jobs:
   build:
     name: 'Build and Push to ACR'
@@ -20,37 +22,64 @@ jobs:
             token: ${{ secrets.GH_PAT }}
             persist-credentials: true
 
-      - name: Docker Login
-        uses: azure/docker-login@v1
-        with:
-            login-server: ${{ secrets.AZURE_URL }}
-            username: ${{ secrets.ACR_USERNAME }}
-            password: ${{ secrets.ACR_PASSWORD }}
+      - name: Log in to ACR
+        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login ${{ secrets.AZURE_URL }} -u ${{ secrets.ACR_USERNAME }} --password-stdin
 
       - name: Build and Push Alto OS to ACR 
-        uses: docker/build-push-action@v2
-        with:
-            push: true
-            tags: ${{ secrets.AZURE_URL }}/alto_os:${{ github.ref_name }}
-            file: alto_os/Dockerfile
+        run: |
+            cd alto_os
+            docker build -t ${{ secrets.AZURE_URL }}/alto_os:${{ github.ref_name }} .
+            docker push ${{ secrets.AZURE_URL }}/alto_os:${{ github.ref_name }}
 
       - name: Build and Push Alto Dash to ACR
-        uses: docker/build-push-action@v2
-        with:
-            push: true
-            tags: ${{ secrets.AZURE_URL }}/alto-dash:${{ github.ref_name }}
-            file: alto-dash/Dockerfile
+        run: |
+            cd alto-dash
+            docker build -t ${{ secrets.AZURE_URL }}/alto-dash:${{ github.ref_name }} .
+            docker push ${{ secrets.AZURE_URL }}/alto-dash:${{ github.ref_name }}
 
       - name: Build and Push Alto CERO Interface to ACR
-        uses: docker/build-push-action@v2
-        with:
-            push: true
-            tags: ${{ secrets.AZURE_URL }}/alto-cero-interface:${{ github.ref_name }}
-            file: alto-cero-interface/Dockerfile
+        run: |
+            cd alto-cero-interface
+            docker build -t ${{ secrets.AZURE_URL }}/alto-cero-interface:${{ github.ref_name }} .
+            docker push ${{ secrets.AZURE_URL }}/alto-cero-interface:${{ github.ref_name }}
 
       - name: Build and Push Alto CERO Automation Backend to ACR
-        uses: docker/build-push-action@v2
-        with:
-            push: true
-            tags: ${{ secrets.AZURE_URL }}/alto-cero-automation-backend:${{ github.ref_name }}
-            file: alto-cero-automation-backend/Dockerfile
+        run: |
+            cd alto-cero-automation-backend
+            docker build -t ${{ secrets.AZURE_URL }}/alto-cero-automation-backend:${{ github.ref_name }} .
+            docker push ${{ secrets.AZURE_URL }}/alto-cero-automation-backend:${{ github.ref_name }}
+
+            
+            
+            
+            
+            
+            
+
+    #   - name: Build and Push Alto OS to ACR 
+    #     uses: docker/build-push-action@v2
+    #     with:
+    #         push: true
+    #         tags: ${{ secrets.AZURE_URL }}/alto_os:${{ github.ref_name }}
+    #         file: alto_os/Dockerfile
+
+    #   - name: Build and Push Alto Dash to ACR
+    #     uses: docker/build-push-action@v2
+    #     with:
+    #         push: true
+    #         tags: ${{ secrets.AZURE_URL }}/alto-dash:${{ github.ref_name }}
+    #         file: alto-dash/Dockerfile
+
+    #   - name: Build and Push Alto CERO Interface to ACR
+    #     uses: docker/build-push-action@v2
+    #     with:
+    #         push: true
+    #         tags: ${{ secrets.AZURE_URL }}/alto-cero-interface:${{ github.ref_name }}
+    #         file: alto-cero-interface/Dockerfile
+
+    #   - name: Build and Push Alto CERO Automation Backend to ACR
+    #     uses: docker/build-push-action@v2
+    #     with:
+    #         push: true
+    #         tags: ${{ secrets.AZURE_URL }}/alto-cero-automation-backend:${{ github.ref_name }}
+    #         file: alto-cero-automation-backend/Dockerfile
