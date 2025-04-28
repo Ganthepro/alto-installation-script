@@ -4,16 +4,16 @@
 # git submodule foreach git pull origin dev    # Pulls latest changes for dev branch
 [submodule "alto_os"]
 	path = alto_os
-	url = https://github.com/AltotechTH/alto_os.git
+	url = git@github.com:AltotechTH/alto_os.git
 	branch = dev
 [submodule "alto-dash"]
 	path = alto-dash
-	url = https://github.com/AltotechTH/alto-dash.git
+	url = git@github.com:AltotechTH/alto-dash.git
 	branch = dev
 [submodule "alto-cero-interface"]
 	path = alto-cero-interface
-	url = https://github.com/AltotechTH/alto-cero-interface.git
+	url = git@github.com:AltotechTH/alto-cero-interface.git
 [submodule "alto-cero-automation-backend"]
 	path = alto-cero-automation-backend
-	url = https://github.com/AltotechTH/alto-cero-automation-backend.git
+	url = git@github.com:AltotechTH/alto-cero-automation-backend.git
     branch = dev
