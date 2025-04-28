@@ -14,11 +14,6 @@
 	path = alto-ml-service
 	url = https://github.com/AltotechTH/alto-ml-service.git
 	branch = dev
-[submodule "supabase"]
-	path = supabase
-	url = https://github.com/supabase/supabase
-	shallow = true
-	depth = 1
 [submodule "alto-cero-interface"]
 	path = alto-cero-interface
 	url = https://github.com/AltotechTH/alto-cero-interface
