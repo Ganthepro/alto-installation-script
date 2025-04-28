@@ -1,0 +1,12 @@
+name: Deploy IoT Edge Modules
+
+on:
+  workflow_dispatch:
+    inputs:
+      DEVICE_ID:
+        description: 'Device ID'
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
