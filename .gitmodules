@@ -1,7 +1,27 @@
-[submodule "alto-cero-automation-backend"]
-	path = alto-cero-automation-backend
-	url = https://github.com/Ganthepro/alto-cero-automation-backend.git
-    tag = v1
+# To check if this submodule is up-to-date, use these commands:
+# git submodule status alto_os     # Shows status with commit hash
+# git submodule update --remote alto_os    # Updates to latest remote commit
+# git submodule foreach git pull origin dev    # Pulls latest changes for dev branch
 [submodule "alto_os"]
 	path = alto_os
-	url = https://github.com/Ganthepro/alto_os.git
+	url = https://github.com/AltotechTH/alto_os.git
+	branch = dev
+[submodule "alto-dash"]
+	path = alto-dash
+	url = https://github.com/AltotechTH/alto-dash.git
+	branch = dev
+[submodule "alto-ml-service"]
+	path = alto-ml-service
+	url = https://github.com/AltotechTH/alto-ml-service.git
+	branch = dev
+[submodule "supabase"]
+	path = supabase
+	url = https://github.com/supabase/supabase
+	shallow = true
+	depth = 1
+[submodule "alto-cero-interface"]
+	path = alto-cero-interface
+	url = https://github.com/AltotechTH/alto-cero-interface
+[submodule "alto-cero-automation-backend"]
+	path = alto-cero-automation-backend
+	url = https://github.com/AltotechTH/alto-cero-automation-backend
