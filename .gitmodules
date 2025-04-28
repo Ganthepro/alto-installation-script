@@ -10,13 +10,10 @@
 	path = alto-dash
 	url = https://github.com/AltotechTH/alto-dash.git
 	branch = dev
-[submodule "alto-ml-service"]
-	path = alto-ml-service
-	url = https://github.com/AltotechTH/alto-ml-service.git
-	branch = dev
 [submodule "alto-cero-interface"]
 	path = alto-cero-interface
-	url = https://github.com/AltotechTH/alto-cero-interface
+	url = https://github.com/AltotechTH/alto-cero-interface.git
 [submodule "alto-cero-automation-backend"]
 	path = alto-cero-automation-backend
-	url = https://github.com/AltotechTH/alto-cero-automation-backend
+	url = https://github.com/AltotechTH/alto-cero-automation-backend.git
+    branch = dev
