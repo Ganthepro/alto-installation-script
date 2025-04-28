@@ -2,3 +2,6 @@
 	path = alto-cero-automation-backend
 	url = https://github.com/Ganthepro/alto-cero-automation-backend.git
     tag = v1
+[submodule "alto_os"]
+	path = alto_os
+	url = https://github.com/Ganthepro/alto_os.git
