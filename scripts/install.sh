@@ -297,7 +297,7 @@ main() {
         -H 'accept: */*' \
         -H "Authorization: Bearer $token" \
         --data '{
-            "isSetup": true
+            "is_setup": true
         }')
 
     if [ "$response" -eq 204 ]; then
