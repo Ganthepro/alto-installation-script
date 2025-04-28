@@ -2,6 +2,10 @@
 # git submodule status alto_os     # Shows status with commit hash
 # git submodule update --remote alto_os    # Updates to latest remote commit
 # git submodule foreach git pull origin dev    # Pulls latest changes for dev branch
+[submodule "alto_os"]
+	path = alto_os
+	url = https://github.com/AltotechTH/alto_os.git
+	branch = dev
 [submodule "alto-dash"]
 	path = alto-dash
 	url = https://github.com/AltotechTH/alto-dash.git
