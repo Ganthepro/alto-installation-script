@@ -10,3 +10,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
+    steps:
+      - name: Echo Input
+        run: |
+          echo "DEVICE_ID: ${{ inputs.DEVICE_ID }}"
