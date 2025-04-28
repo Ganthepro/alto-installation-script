@@ -27,30 +27,26 @@ jobs:
         uses: docker/build-push-action@v2
         with:
             push: true
-            context: ./alto_os
             tags: ${{ secrets.AZURE_URL }}/alto_os:${{ github.ref_name }}
-            file: Dockerfile
+            file: alto_os/Dockerfile
 
       - name: Build and Push Alto Dash to ACR
         uses: docker/build-push-action@v2
         with:
             push: true
-            context: ./alto-dash
             tags: ${{ secrets.AZURE_URL }}/alto-dash:${{ github.ref_name }}
-            file: Dockerfile
+            file: alto-dash/Dockerfile
 
       - name: Build and Push Alto CERO Interface to ACR
         uses: docker/build-push-action@v2
         with:
             push: true
-            context: ./alto-cero-interface
             tags: ${{ secrets.AZURE_URL }}/alto-cero-interface:${{ github.ref_name }}
-            file: Dockerfile
+            file: alto-cero-interface/Dockerfile
 
       - name: Build and Push Alto CERO Automation Backend to ACR
         uses: docker/build-push-action@v2
         with:
             push: true
-            context: ./alto-cero-automation-backend
             tags: ${{ secrets.AZURE_URL }}/alto-cero-automation-backend:${{ github.ref_name }}
-            file: Dockerfile
+            file: alto-cero-automation-backend/Dockerfile
