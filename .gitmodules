@@ -1,0 +1,4 @@
+[submodule "alto-cero-automation-backend"]
+	path = alto-cero-automation-backend
+	url = https://github.com/Ganthepro/alto-cero-automation-backend.git
+    tag = v1
