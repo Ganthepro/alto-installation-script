@@ -49,7 +49,7 @@ services:
       # Uncomment to use Big Query backend for analytics
       # NEXT_ANALYTICS_BACKEND_PROVIDER: bigquery
     networks:
-      - azure-iot-edge
+      - supabase_network
 
   kong:
     container_name: supabase-kong
@@ -79,11 +79,9 @@ services:
     # https://unix.stackexchange.com/a/294837
     entrypoint: bash -c 'eval "echo \"$$(cat ~/temp.yml)\"" > ~/kong.yml && /docker-entrypoint.sh kong docker-start'
     networks:
-      - azure-iot-edge
+      - supabase_network
 
   auth:
-    networks:
-      - azure-iot-edge
     container_name: supabase-auth
     image: supabase/gotrue:v2.170.0
     restart: unless-stopped
@@ -165,6 +163,8 @@ services:
       # GOTRUE_HOOK_SEND_EMAIL_ENABLED: "false"
       # GOTRUE_HOOK_SEND_EMAIL_URI: "http://host.docker.internal:54321/functions/v1/email_sender"
       # GOTRUE_HOOK_SEND_EMAIL_SECRETS: "v1,whsec_VGhpcyBpcyBhbiBleGFtcGxlIG9mIGEgc2hvcnRlciBCYXNlNjQgc3RyaW5n"
+    networks:
+      - supabase_network
 
   rest:
     container_name: supabase-rest
@@ -189,7 +189,7 @@ services:
         "postgrest"
       ]
     networks:
-      - azure-iot-edge
+      - supabase_network
 
   realtime:
     # This container name looks inconsistent but is correct because realtime constructs tenant id by parsing the subdomain
@@ -236,7 +236,7 @@ services:
       SEED_SELF_HOST: true
       RUN_JANITOR: true
     networks:
-      - azure-iot-edge
+      - supabase_network
 
   # To use S3 backed storage: docker compose -f docker-compose.yml -f docker-compose.s3.yml up
   storage:
@@ -282,7 +282,7 @@ services:
       ENABLE_IMAGE_TRANSFORMATION: "true"
       IMGPROXY_URL: http://imgproxy:5001
     networks:
-      - azure-iot-edge
+      - supabase_network
 
   imgproxy:
     container_name: supabase-imgproxy
@@ -306,7 +306,7 @@ services:
       IMGPROXY_USE_ETAG: "true"
       IMGPROXY_ENABLE_WEBP_DETECTION: ${IMGPROXY_ENABLE_WEBP_DETECTION}
     networks:
-      - azure-iot-edge
+      - supabase_network
 
   meta:
     container_name: supabase-meta
@@ -326,7 +326,7 @@ services:
       PG_META_DB_USER: supabase_admin
       PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD}
     networks:
-      - azure-iot-edge
+      - supabase_network
 
   functions:
     container_name: supabase-edge-functions
@@ -352,7 +352,7 @@ services:
         "/home/deno/functions/main"
       ]
     networks:
-      - azure-iot-edge
+      - supabase_network
 
   analytics:
     container_name: supabase-analytics
@@ -401,7 +401,7 @@ services:
       # GOOGLE_PROJECT_ID: ${GOOGLE_PROJECT_ID}
       # GOOGLE_PROJECT_NUMBER: ${GOOGLE_PROJECT_NUMBER}
     networks:
-      - azure-iot-edge
+      - supabase_network
 
   # Comment out everything below this point if you are using an external Postgres database
   db:
@@ -461,7 +461,7 @@ services:
         "log_min_messages=fatal" # prevents Realtime polling queries from appearing in logs
       ]
     networks:
-      - azure-iot-edge
+      - supabase_network
 
   vector:
     container_name: supabase-vector
@@ -491,7 +491,7 @@ services:
         "/etc/vector/vector.yml"
       ]
     networks:
-      - azure-iot-edge
+      - supabase_network
 
   # Update the DATABASE_URL if you are using an external Postgres database
   supavisor:
@@ -546,12 +546,13 @@ services:
         "/app/bin/migrate && /app/bin/supavisor eval \"$$(cat /etc/pooler/pooler.exs)\" && /app/bin/server"
       ]
     networks:
-      - azure-iot-edge
+      - supabase_network
 
 volumes:
   db-config:
 
 networks:
-  azure-iot-edge:
+  supabase_network:
+    name: supabase_network
     driver: bridge
-    external: true  
+    external: true

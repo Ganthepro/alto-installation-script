@@ -10,7 +10,7 @@ services:
     volumes:
       - mongodb_data:/data/db
     networks:
-      - azure-iot-edge
+      - alto_internal
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 30s
@@ -43,7 +43,7 @@ services:
       - "-c"
       - "/timescaledb/timescaledb-entrypoint.sh"
     networks:
-      - azure-iot-edge
+      - alto_internal
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 30s
@@ -51,27 +51,27 @@ services:
       retries: 3
       start_period: 40s
         
-  # alto-dash:
-  #   build:
-  #     context: ./alto-dash
-  #     dockerfile: Dockerfile
-  #   image: alto-dash:latest
-  #   restart: unless-stopped
-  #   ports:
-  #     - 8801:8801
-  #   container_name: alto-dash
-  #   volumes:
-  #     - ./alto-dash:/dashboard
-  #     - ./site_configs:/dashboard/site_configs
-  #     - ./model_schema.yaml:/dashboard/model_schema.yaml
-  #   networks:
-  #     - alto_internal
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 5G
-  #       reservations:
-  #         memory: 2G
+  alto-dash:
+    build:
+      context: ./alto-dash
+      dockerfile: Dockerfile
+    image: alto-dash:latest
+    restart: unless-stopped
+    ports:
+      - 8801:8801
+    container_name: alto-dash
+    volumes:
+      - ./alto-dash:/dashboard
+      - ./site_configs:/dashboard/site_configs
+      - ./model_schema.yaml:/dashboard/model_schema.yaml
+    networks:
+      - alto_internal
+    deploy:
+      resources:
+        limits:
+          memory: 5G
+        reservations:
+          memory: 2G
 
   nginx-proxy:
     image: nginx:alpine
@@ -82,20 +82,16 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
     restart: always
     networks:
-      - azure-iot-edge
+      - alto_internal
+      - supabase_network
 
 volumes:
   mongodb_data:
   timescaledb_data:
 
 networks:
-  azure-iot-edge:
-    external: true
+  alto_internal:
+    name: alto_internal
+  supabase_network:
+    name: supabase_network
     driver: bridge
-
-# networks:
-#   alto_internal:
-#     name: alto_internal
-  # supabase_network:
-  #   name: supabase_network
-  #   external: true

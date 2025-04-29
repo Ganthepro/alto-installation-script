@@ -4,7 +4,7 @@ services:
   alto-cero-automation-backend:
     container_name: alto-cero-automation-backend
     build: alto-cero-automation-backend/.
-    command: sh -c "python manage.py migrate"
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8001"
     volumes:
       - ./alto-cero-automation-backend:/app
     ports:
@@ -23,10 +23,26 @@ services:
       - TIMESCALEDB_PASSWORD=${TIMESCALEDB_PASSWORD}
       - TIMESCALEDB_DATABASE=${TIMESCALEDB_DATABASE}
     networks:
-      - azure-iot-edge
+      - alto_internal
+      - supabase_network
+
+  alto-cero-interface:
+    container_name: alto-cero-interface
+    build:
+      context: alto-cero-interface/.
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - alto_internal
+      - supabase_network
+    restart: unless-stopped
+
 
 networks:
-  azure-iot-edge:
+  alto_internal:
     external: true
-    name: azure-iot-edge 
-    driver: bridge
+    name: alto_internal
+  supabase_network:
+    external: true
+    name: supabase_network

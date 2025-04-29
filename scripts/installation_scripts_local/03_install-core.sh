@@ -1,37 +1,28 @@
-!/bin/bash
+#!/bin/bash
 
 # Parse command line arguments
 site_id=""
-token=""
 while [[ $# -gt 0 ]]; do
-    key="$1"
-    case $key in
+  key="$1"
+  case $key in
     --site_id)
-        site_id="$2"
-        shift
-        ;;
-    --token)
-        token="$2"
-        shift
-        ;;
+      site_id="$2"
+      shift
+      ;;
     *)
-        echo "Unknown option: $1"
-        ;;
-    esac
-    shift
+      echo "Unknown option: $1"
+      ;;
+  esac
+  shift
 done
 
 if [ -z "$site_id" ]; then
-    echo "Error: You must provide a site id using --site_id"
-    exit 1
-fi
-
-if [ -z "$token" ]; then
-    echo "Error: You must provide a token using --token"
-    exit 1
+  echo "Error: You must provide a site id using --site_id"
+  exit 1
 fi
 
 cd $WORKING_DIR
+source $WORKING_DIR/volttron/env/bin/activate
 
 echo "Reading services from site config..."
 SERVICES_STATUS=$(python3 -c "
@@ -65,18 +56,30 @@ echo -e "\nList of Services"
 echo "$SERVICES_STATUS" | grep -v "^---ENABLED---"
 
 echo -e "\nInstalling Core services..."
-docker compose up -d
+sudo docker compose -f docker-compose.local.yml up --build -d
+sudo docker compose -f docker-compose.local.yml stop
+
 
 if [ "$SUPABASE_ENABLED" = "true" ]; then
     echo -e "\nInstalling Supabase services..."
-    cp $WORKING_DIR/supabase/.env.example $WORKING_DIR/supabase/.env # fix later
-    
-    python3 $WORKING_DIR/scripts/installation_scripts/02_init-supabase-cred.py $WORKING_DIR/supabase/.env $site_id $token
+    python $WORKING_DIR/scripts/installation_scripts_local/04_init-supabase-cred.py $WORKING_DIR/supabase/.env $site_id
     cd supabase
-    sudo docker compose up -d
+    sudo docker compose -f docker-compose.local.yml up -d
     cd $WORKING_DIR
 
     echo -e "\nInstalling CPMS services..."  # TODO: Make this optional and selectable
     cp .env $WORKING_DIR/alto-cero-interface/.env
-    sudo docker compose -f docker-compose-cpms.yml up --build  # This include Django migrate command
+    sudo docker compose -f docker-compose-cpms.local.yml up --build -d  # This include Django migrate command
+    sudo docker compose -f docker-compose-cpms.local.yml stop
+
+    # Enable Realtime for Supabase tables
+    echo -e "\nEnabling Realtime for Supabase tables..."
+    sudo docker exec -i supabase-db psql -U postgres -d postgres -c "
+      ALTER PUBLICATION supabase_realtime ADD TABLE latest_data;
+      ALTER PUBLICATION supabase_realtime ADD TABLE maintenance_history;
+      ALTER PUBLICATION supabase_realtime ADD TABLE action_queue;
+      ALTER PUBLICATION supabase_realtime ADD TABLE group_action_queue;
+      ALTER PUBLICATION supabase_realtime ADD TABLE autopilot;
+      ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
+    "
 fi
