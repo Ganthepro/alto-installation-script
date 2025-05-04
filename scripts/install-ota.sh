@@ -48,7 +48,7 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
-git submodule update --remote alto-cero-automation-backend
+git submodule update --init alto-cero-automation-backend
 URL="https://iot-api.edusaig.com/api/device/env"
 
 if ! command -v jq &>/dev/null; then
