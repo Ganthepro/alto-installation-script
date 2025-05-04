@@ -48,7 +48,12 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
+echo "Installing git submodules..."
 git submodule update --init alto-cero-automation-backend
+
+echo "Installing jq..."
+sudo apt install -y jq 2>&1 | tee -a "$LOG_FILE"
+
 URL="https://iot-api.edusaig.com/api/device/env"
 
 if ! command -v jq &>/dev/null; then
@@ -176,11 +181,12 @@ print_status() {
 install_dependencies() {
     show_progress_and_logs "Installing required dependencies"
 
-    print_status "Installing jq and python3..." "info"
-    sudo apt install -y jq python3 2>&1 | tee -a "$LOG_FILE"
+    print_status "Installing python3..." "info"
+    sudo apt install -y python3 2>&1 | tee -a "$LOG_FILE"
 
     print_status "Installing required Python packages..." "info"
     pip3 install google-auth==2.28.1 google-auth-oauthlib==1.2.0 google-api-python-client==2.119.0 2>&1 | tee -a "$LOG_FILE"
+    pip3 install azure-iot-device==2.6.0 azure-iot-hub==2.6.1 python-dotenv==1.0.1 2>&1 | tee -a "$LOG_FILE"
 
     # Validate site configuration
     # print_status "Validating site configuration for '$site_id'..." "info"
