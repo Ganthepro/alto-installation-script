@@ -13,11 +13,10 @@
 # to initialize and update all required git submodules.
 
 # Initialize variables
-# WORKING_DIR="/home/gan/alto-installation-script"
-# export WORKING_DIR=$WORKING_DIR
 site_id=""
 token=""
 with_azure=true
+
 
 # Terminal colors and styles
 GREEN='\033[0;32m'
@@ -32,6 +31,7 @@ total_steps=0
 current_step=0
 LOG_FILE="/tmp/alto_install_$$.log"
 touch "$LOG_FILE"
+
 
 # Parse command-line arguments
 while [[ $# -gt 0 ]]; do
@@ -48,6 +48,7 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
+git submodule update --remote alto-cero-automation-backend
 URL="https://iot-api.edusaig.com/api/device/env"
 
 if ! command -v jq &>/dev/null; then

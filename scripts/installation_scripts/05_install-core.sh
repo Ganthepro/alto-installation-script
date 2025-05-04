@@ -32,10 +32,12 @@ if [ -z "$token" ]; then
 fi
 
 cd $WORKING_DIR
+echo "Current working directory: $WORKING_DIR"
 
-echo "Reading services from site config..."
 SERVICES_STATUS=$(python3 -c "
 import yaml
+import os
+
 with open(f'site_configs/${site_id}.yaml', 'r') as f:
     config = yaml.safe_load(f)
 enabled_services = []
