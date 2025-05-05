@@ -50,28 +50,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-        
-  # alto-dash:
-  #   build:
-  #     context: ./alto-dash
-  #     dockerfile: Dockerfile
-  #   image: alto-dash:latest
-  #   restart: unless-stopped
-  #   ports:
-  #     - 8801:8801
-  #   container_name: alto-dash
-  #   volumes:
-  #     - ./alto-dash:/dashboard
-  #     - ./site_configs:/dashboard/site_configs
-  #     - ./model_schema.yaml:/dashboard/model_schema.yaml
-  #   networks:
-  #     - alto_internal
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 5G
-  #       reservations:
-  #         memory: 2G
 
   nginx-proxy:
     image: nginx:alpine
