@@ -182,7 +182,6 @@ install_dependencies() {
     show_progress_and_logs "Installing required dependencies"
 
     print_status "Installing python3..." "info"
-    #sudo apt install -y python3 2>&1 | tee -a "$LOG_FILE"
     sudo apt install -y python3 python3-pip 2>&1 | tee -a "$LOG_FILE"
 
     print_status "Installing required Python packages..." "info"

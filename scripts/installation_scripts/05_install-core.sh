@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 # Parse command line arguments
 site_id=""
@@ -67,7 +67,7 @@ echo -e "\nList of Services"
 echo "$SERVICES_STATUS" | grep -v "^---ENABLED---"
 
 echo -e "\nInstalling Core services..."
-docker compose up -d
+sudo docker compose up -d
 
 if [ "$SUPABASE_ENABLED" = "true" ]; then
     echo -e "\nInstalling Supabase services..."
