@@ -182,7 +182,8 @@ install_dependencies() {
     show_progress_and_logs "Installing required dependencies"
 
     print_status "Installing python3..." "info"
-    sudo apt install -y python3 2>&1 | tee -a "$LOG_FILE"
+    #sudo apt install -y python3 2>&1 | tee -a "$LOG_FILE"
+    sudo apt install -y python3 python3-pip 2>&1 | tee -a "$LOG_FILE"
 
     print_status "Installing required Python packages..." "info"
     pip3 install google-auth==2.28.1 google-auth-oauthlib==1.2.0 google-api-python-client==2.119.0 2>&1 | tee -a "$LOG_FILE"
