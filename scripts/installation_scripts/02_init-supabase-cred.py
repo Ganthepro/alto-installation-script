@@ -189,7 +189,7 @@ def main():
     update_supabase_env_file(env_path, jwt_secret, anon_key, service_key)
 
     # Update Alto .env file
-    update_alto_env_file(anon_key)
+    # update_alto_env_file(anon_key)
 
     # Update the site configuration
     update_supabase_agent_config(site_id, anon_key)
